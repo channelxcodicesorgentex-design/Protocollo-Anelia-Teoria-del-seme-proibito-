@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROTOCOLLO ANELIA - Codice Sorgente X</title>
+    <style>
+        :root {
+            --neon-green: #00ffcc;
+            --seed-gold: #ffcc00;
+            --bg-black: #0a0a0a;
+            --text-gray: #e0e0e0;
+        }
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-gray);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--neon-green); width: 100%; padding-bottom: 10px; }
+        h1 { color: var(--neon-green); font-size: 1.4em; letter-spacing: 2px; margin: 0; }
+        h2 { color: var(--seed-gold); font-size: 0.9em; margin-top: 5px; }
+
+        /* L'UOVO - MOTORE FREQUENZIALE */
+        .mfc-container { margin: 20px 0; position: relative; }
+        .mfc-egg {
+            width: 120px; height: 160px;
+            background: radial-gradient(circle at 30% 30%, #555, #000);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 20px var(--neon-green);
+            animation: pulse 3s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px var(--seed-gold); }
+            100% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
+        }
+
+        /* MAPPA SONORA */
+        .box {
+            border: 1px solid var(--neon-green);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(0, 255, 204, 0.05);
+        }
+        button {
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            padding: 12px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button:active { background: var(--neon-green); color: black; }
+
+        /* TASTO ORO PDF */
+        .btn-gold {
+            background: var(--seed-gold) !important;
+            color: black !important;
+            border: none !important;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PROTOCOLLO ANELIA</h1>
+        <h2>LA TEORIA DEL SEME PROIBITO</h2>
+    </header>
+
+    <div class="mfc-container">
+        <div class="mfc-egg"></div>
+        <p style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green);">MFC ATTIVO: 16%</p>
+    </div>
+
+    <div class="box">
+        <h3 style="font-size: 0.8em; margin-bottom: 15px;">RENAISSANCE: MAPPA SONORA</h3>
+        <button id="recordBtn" onclick="toggleRecording()">🎙️ REGISTRA COMANDO (LOOP)</button>
+        <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold);">SISTEMA IN ATTESA...</div>
+    </div>
+
+    <div class="box" style="border-color: var(--seed-gold);">
+        <h3 style="font-size: 0.8em; margin-bottom: 15px; color: var(--seed-gold);">DOCUMENTAZIONE SORGENTE</h3>
+        <a href="https://drive.google.com/file/d/1cpuFwut-Er-SC6W2jH21j-7Gz_n8NPWO/view?usp=sharing" target="_blank" style="text-decoration: none;">
+            <button class="btn-gold">📥 SCARICA IL TRATTATO (PDF)</button>
+        </a>
+    </div>
+
+    <footer style="margin-top: 40px; font-size: 0.6em; color: #555;">
+        CANALE: CODICE SORGENTE X | OPERATORE: VICTOR AURELIO
+    </footer>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioUrl;
+        let audioLoop = new Audio();
+        audioLoop.loop = true;
+
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            const status = document.getElementById('status');
+
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioUrl = URL.createObjectURL(audioBlob);
+                    audioLoop.src = audioUrl;
+                    audioLoop.play();
+                    status.innerText = "LOOP ATTIVO NELLA LATTICE...";
+                };
+
+                audioChunks = [];
+                mediaRecorder.start();
+                btn.innerText = "⏹️ FERMA E LANCIA LOOP";
+                status.innerText = "REGISTRAZIONE IN CORSO...";
+            } else {
+                mediaRecorder.stop();
+                btn.innerText = "🎙️ REGISTRA NUOVO COMANDO";
+            }
+        }
+    </script>
+</body>
+</html>
