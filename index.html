@@ -6,155 +6,154 @@
     <title>PROTOCOLLO ANELIA - Codice Sorgente X</title>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
-        :root {
-            --neon-green: #00ffcc;
-            --seed-gold: #ffcc00;
-            --bg-black: #0a0a0a;
-            --text-gray: #e0e0e0;
-        }
-        body {
-            background-color: var(--bg-black);
-            color: var(--text-gray);
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
-        }
-        
-        /* Barra di Traduzione */
+        :root { --neon-green: #00ffcc; --seed-gold: #ffcc00; --bg-black: #0a0a0a; --text-gray: #e0e0e0; --pixel-mario: #ff4500; }
+        body { background-color: var(--bg-black); color: var(--text-gray); font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
         #google_translate_element { margin: 10px 0; }
-
         header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--neon-green); width: 100%; padding-bottom: 10px; }
-        h1 { color: var(--neon-green); font-size: 1.4em; letter-spacing: 2px; margin: 0; }
-        
-        /* L'UOVO - MOTORE FREQUENZIALE INTERATTIVO */
-        .mfc-container { margin: 20px 0; position: relative; cursor: pointer; }
-        .mfc-egg {
-            width: 120px; height: 160px;
-            background: radial-gradient(circle at 30% 30%, #555, #000);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            box-shadow: 0 0 20px var(--neon-green);
-            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        h1 { color: var(--neon-green); font-size: 1.4em; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
+        h2 { color: var(--seed-gold); font-size: 0.8em; margin-top: 5px; }
+
+        /* L'UOVO-PORTALE */
+        .mfc-container { margin: 20px 0; position: relative; cursor: pointer; perspective: 1000px; }
+        .mfc-egg { 
+            width: 150px; height: 200px; 
+            background: radial-gradient(circle at 30% 30%, #555, #000); 
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
+            box-shadow: 0 0 20px var(--neon-green); 
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
             animation: pulse 3s infinite ease-in-out;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; /* Importante per Grinberg */
+        }
+        
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+        /* GRINBERG PIXEL-ART (NASCOSTO) */
+        .grinberg-pixel {
+            width: 80px; height: 100px;
+            background-color: var(--pixel-mario); /* Colore base 'Mario' */
+            /* Pixel art stilizzata di Grinberg con i baffi */
+            clip-path: polygon(0 20%, 20% 20%, 20% 0, 80% 0, 80% 20%, 100% 20%, 100% 40%, 80% 40%, 80% 60%, 100% 60%, 100% 80%, 80% 80%, 80% 100%, 20% 100%, 20% 80%, 0 80%, 0 60%, 20% 60%, 20% 40%, 0 40%);
+            opacity: 0; transition: opacity 0.5s ease 0.8s, transform 0.5s ease 0.8s;
+            transform: scale(0);
+            box-shadow: inset 0 0 10px black;
+        }
+        /* Dettagli Pixel (Occhi e Baffi) */
+        .grinberg-pixel::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            background: 
+                linear-gradient(90deg, #fff 20%, transparent 20%) 25% 25% / 15% 15% no-repeat, /* Occhio Sx */
+                linear-gradient(90deg, #fff 20%, transparent 20%) 60% 25% / 15% 15% no-repeat, /* Occhio Dx */
+                linear-gradient(90deg, #8b4513 100%, transparent 100%) 30% 60% / 40% 15% no-repeat; /* Baffi */
         }
 
-        /* Effetto Apertura Portale */
-        .mfc-egg.open {
-            transform: scale(1.5) rotateY(180deg);
-            background: radial-gradient(circle, var(--neon-green), #000);
-            box-shadow: 0 0 60px var(--seed-gold);
-            border-radius: 20% 20% 80% 80%;
-            opacity: 0.8;
+        /* FUMETTO CITAZIONE (NASCOSTO) */
+        .quote-bubble {
+            position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%) scale(0);
+            width: 250px; background: white; color: black; padding: 10px; border-radius: 10px;
+            font-size: 0.7em; text-align: center; border: 2px solid black;
+            transition: all 0.5s ease 1.2s; opacity: 0;
         }
+        .quote-bubble::after { content: ''; position: absolute; top: -10px; left: 50%; border-width: 10px; border-style: solid; border-color: transparent transparent white transparent; transform: translateX(-50%); }
 
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px var(--seed-gold); }
-            100% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
+        /* STATO APERTO */
+        .mfc-egg.open { 
+            transform: scale(1.1) rotateY(180deg); 
+            background: radial-gradient(circle, var(--seed-gold), #000); 
+            box-shadow: 0 0 60px var(--seed-gold); 
+            border-radius: 10%; 
         }
+        
+        .mfc-egg.open .grinberg-pixel { opacity: 1; transform: scale(1) rotateY(180deg); } /* Ruota anche Grinberg per vederlo dritto */
+        .mfc-egg.open + .quote-bubble { opacity: 1; transform: translateX(-50%) scale(1); }
 
-        .box {
-            border: 1px solid var(--neon-green);
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            margin-bottom: 20px;
-            background: rgba(0, 255, 204, 0.05);
-        }
-        button {
-            background: transparent;
-            color: var(--neon-green);
-            border: 1px solid var(--neon-green);
-            padding: 12px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .btn-gold {
-            background: var(--seed-gold) !important;
-            color: black !important;
-            border: none !important;
-        }
+        /* BOX E PULSANTI (INVARIATI) */
+        .box { border: 1px solid var(--neon-green); padding: 20px; width: 90%; max-width: 400px; text-align: center; margin-bottom: 20px; background: rgba(0, 255, 204, 0.05); }
+        button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; }
+        .btn-gold { background: var(--seed-gold) !important; color: black !important; border: none !important; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
     </style>
 </head>
 <body>
-
     <div id="google_translate_element"></div>
-
     <header>
         <h1>PROTOCOLLO ANELIA</h1>
-        <h2 style="color: var(--seed-gold); font-size: 0.8em;">ACCESSO GNA: CODICE SORGENTE X</h2>
+        <h2>LA TEORIA DEL SEME PROIBITO | GNA: SORGENTE X</h2>
     </header>
 
     <div class="mfc-container" onclick="startScanner()">
-        <div id="egg" class="mfc-egg"></div>
+        <div id="egg" class="mfc-egg">
+            <div class="grinberg-pixel"></div>
+        </div>
+        <div id="quote" class="quote-bubble">
+            "La realtà non è ciò che vediamo, ma ciò che creiamo con la nostra Sintesi Energetica."
+        </div>
         <p id="egg-status" style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green);">CLICCA PER SCANSIONE BIOMETRICA</p>
     </div>
 
     <div class="box">
         <h3>RENAISSANCE: MAPPA SONORA</h3>
-        <button onclick="alert('Sistema di loop integrato nel GNA...')">🎙️ ATTIVA FREQUENZA</button>
+        <button id="recordBtn" onclick="toggleRecording()">🎙️ REGISTRA COMANDO (LOOP)</button>
+        <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold);">SISTEMA IN ATTESA...</div>
     </div>
 
     <div class="box" style="border-color: var(--seed-gold);">
-        <h3 style="color: var(--seed-gold);">DOCUMENTAZIONE SORGENTE</h3>
+        <h3>DOCUMENTAZIONE SORGENTE</h3>
         <a href="https://drive.google.com/file/d/1cpuFwut-Er-SC6W2jH21j-7Gz_n8NPWO/view?usp=sharing" target="_blank">
             <button class="btn-gold">📥 SCARICA TRATTATO (PDF)</button>
         </a>
     </div>
 
-    <footer style="margin-top: 40px; font-size: 0.6em; color: #555;">
-        OPERATORE: VICTOR AURELIO LOPEZ GUAMAN | SEMI 144.000
-    </footer>
-
     <script>
-        // Inizializzazione Traduttore
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element');
-        }
+        function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element'); }
 
-        // Funzione Scanner 3y1 e Apertura
+        // --- LOGICA SCANNER CON GRINBERG ---
         function startScanner() {
             const egg = document.getElementById('egg');
             const status = document.getElementById('egg-status');
             
-            // Suono dello Scanner (Sintetizzato elettronicamente)
+            // Audio dello scanner (Manteniamo quello Hitech)
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'sawtooth';
+            const osc = audioCtx.createOscillator(); osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 1);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.5);
+            const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
             
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            // Apertura/Chiusura Egg
+            egg.classList.toggle('open');
+            status.innerText = egg.classList.contains('open') ? "PORTALE APERTO - GRINBERG RILEVATO" : "CLICCA PER SCANSIONE BIOMETRICA";
             
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + 1);
+            // Audio Mario Bros (Se presente il file grinberg_jump.wav)
+            if(egg.classList.contains('open')) {
+                const marioAudio = new Audio('grinberg_jump.wav'); // CARICA QUESTO FILE SU GITHUB!
+                marioAudio.play().catch(e => console.log("Audio Mario non trovato o bloccato."));
+            }
+        }
 
-            status.innerText = "SCANSIONE 3y1 IN CORSO...";
-            egg.style.boxShadow = "0 0 50px white";
-
-            // Apertura dopo la scansione
-            setTimeout(() => {
-                egg.classList.toggle('open');
-                if(egg.classList.contains('open')) {
-                    status.innerText = "PORTALE APERTO - GNA RICONOSCIUTO";
-                    status.style.color = "var(--seed-gold)";
-                } else {
-                    status.innerText = "CLICCA PER SCANSIONE BIOMETRICA";
-                    status.style.color = "var(--neon-green)";
-                }
-            }, 1200);
+        // --- LOGICA REGISTRAZIONE (FUNZIONANTE) ---
+        let mediaRecorder; let audioChunks = []; let audioLoop = new Audio(); audioLoop.loop = true;
+        async function toggleRecording() {
+            const btn = document.getElementById('recordBtn');
+            const status = document.getElementById('status');
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                    audioLoop.src = URL.createObjectURL(blob);
+                    audioLoop.play();
+                    status.innerText = "LOOP ATTIVO NELLA LATTICE...";
+                };
+                audioChunks = []; mediaRecorder.start();
+                btn.innerText = "⏹️ FERMA E LANCIA LOOP";
+                status.innerText = "REGISTRAZIONE IN CORSO...";
+            } else {
+                mediaRecorder.stop();
+                btn.innerText = "🎙️ REGISTRA NUOVO COMANDO";
+            }
         }
     </script>
 </body>
