@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROTOCOLLO ANELIA - Codice Sorgente X</title>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
         :root {
             --neon-green: #00ffcc;
@@ -21,26 +22,39 @@
             padding: 20px;
             margin: 0;
         }
+        
+        /* Barra di Traduzione */
+        #google_translate_element { margin: 10px 0; }
+
         header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--neon-green); width: 100%; padding-bottom: 10px; }
         h1 { color: var(--neon-green); font-size: 1.4em; letter-spacing: 2px; margin: 0; }
-        h2 { color: var(--seed-gold); font-size: 0.9em; margin-top: 5px; }
-
-        /* L'UOVO - MOTORE FREQUENZIALE */
-        .mfc-container { margin: 20px 0; position: relative; }
+        
+        /* L'UOVO - MOTORE FREQUENZIALE INTERATTIVO */
+        .mfc-container { margin: 20px 0; position: relative; cursor: pointer; }
         .mfc-egg {
             width: 120px; height: 160px;
             background: radial-gradient(circle at 30% 30%, #555, #000);
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             box-shadow: 0 0 20px var(--neon-green);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: pulse 3s infinite ease-in-out;
         }
+
+        /* Effetto Apertura Portale */
+        .mfc-egg.open {
+            transform: scale(1.5) rotateY(180deg);
+            background: radial-gradient(circle, var(--neon-green), #000);
+            box-shadow: 0 0 60px var(--seed-gold);
+            border-radius: 20% 20% 80% 80%;
+            opacity: 0.8;
+        }
+
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
             50% { transform: scale(1.05); box-shadow: 0 0 40px var(--seed-gold); }
             100% { transform: scale(1); box-shadow: 0 0 20px var(--neon-green); }
         }
 
-        /* MAPPA SONORA */
         .box {
             border: 1px solid var(--neon-green);
             padding: 20px;
@@ -60,78 +74,87 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-        button:active { background: var(--neon-green); color: black; }
 
-        /* TASTO ORO PDF */
         .btn-gold {
             background: var(--seed-gold) !important;
             color: black !important;
             border: none !important;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
     </style>
 </head>
 <body>
 
+    <div id="google_translate_element"></div>
+
     <header>
         <h1>PROTOCOLLO ANELIA</h1>
-        <h2>LA TEORIA DEL SEME PROIBITO</h2>
+        <h2 style="color: var(--seed-gold); font-size: 0.8em;">ACCESSO GNA: CODICE SORGENTE X</h2>
     </header>
 
-    <div class="mfc-container">
-        <div class="mfc-egg"></div>
-        <p style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green);">MFC ATTIVO: 16%</p>
+    <div class="mfc-container" onclick="startScanner()">
+        <div id="egg" class="mfc-egg"></div>
+        <p id="egg-status" style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green);">CLICCA PER SCANSIONE BIOMETRICA</p>
     </div>
 
     <div class="box">
-        <h3 style="font-size: 0.8em; margin-bottom: 15px;">RENAISSANCE: MAPPA SONORA</h3>
-        <button id="recordBtn" onclick="toggleRecording()">🎙️ REGISTRA COMANDO (LOOP)</button>
-        <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold);">SISTEMA IN ATTESA...</div>
+        <h3>RENAISSANCE: MAPPA SONORA</h3>
+        <button onclick="alert('Sistema di loop integrato nel GNA...')">🎙️ ATTIVA FREQUENZA</button>
     </div>
 
     <div class="box" style="border-color: var(--seed-gold);">
-        <h3 style="font-size: 0.8em; margin-bottom: 15px; color: var(--seed-gold);">DOCUMENTAZIONE SORGENTE</h3>
-        <a href="https://drive.google.com/file/d/1cpuFwut-Er-SC6W2jH21j-7Gz_n8NPWO/view?usp=sharing" target="_blank" style="text-decoration: none;">
-            <button class="btn-gold">📥 SCARICA IL TRATTATO (PDF)</button>
+        <h3 style="color: var(--seed-gold);">DOCUMENTAZIONE SORGENTE</h3>
+        <a href="https://drive.google.com/file/d/1cpuFwut-Er-SC6W2jH21j-7Gz_n8NPWO/view?usp=sharing" target="_blank">
+            <button class="btn-gold">📥 SCARICA TRATTATO (PDF)</button>
         </a>
     </div>
 
     <footer style="margin-top: 40px; font-size: 0.6em; color: #555;">
-        CANALE: CODICE SORGENTE X | OPERATORE: VICTOR AURELIO
+        OPERATORE: VICTOR AURELIO LOPEZ GUAMAN | SEMI 144.000
     </footer>
 
     <script>
-        let mediaRecorder;
-        let audioChunks = [];
-        let audioUrl;
-        let audioLoop = new Audio();
-        audioLoop.loop = true;
+        // Inizializzazione Traduttore
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element');
+        }
 
-        async function toggleRecording() {
-            const btn = document.getElementById('recordBtn');
-            const status = document.getElementById('status');
+        // Funzione Scanner 3y1 e Apertura
+        function startScanner() {
+            const egg = document.getElementById('egg');
+            const status = document.getElementById('egg-status');
+            
+            // Suono dello Scanner (Sintetizzato elettronicamente)
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 1);
+            
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1);
 
-            if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                
-                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    audioUrl = URL.createObjectURL(audioBlob);
-                    audioLoop.src = audioUrl;
-                    audioLoop.play();
-                    status.innerText = "LOOP ATTIVO NELLA LATTICE...";
-                };
+            status.innerText = "SCANSIONE 3y1 IN CORSO...";
+            egg.style.boxShadow = "0 0 50px white";
 
-                audioChunks = [];
-                mediaRecorder.start();
-                btn.innerText = "⏹️ FERMA E LANCIA LOOP";
-                status.innerText = "REGISTRAZIONE IN CORSO...";
-            } else {
-                mediaRecorder.stop();
-                btn.innerText = "🎙️ REGISTRA NUOVO COMANDO";
-            }
+            // Apertura dopo la scansione
+            setTimeout(() => {
+                egg.classList.toggle('open');
+                if(egg.classList.contains('open')) {
+                    status.innerText = "PORTALE APERTO - GNA RICONOSCIUTO";
+                    status.style.color = "var(--seed-gold)";
+                } else {
+                    status.innerText = "CLICCA PER SCANSIONE BIOMETRICA";
+                    status.style.color = "var(--neon-green)";
+                }
+            }, 1200);
         }
     </script>
 </body>
