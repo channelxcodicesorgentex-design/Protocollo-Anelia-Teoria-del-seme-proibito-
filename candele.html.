@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victor Milano Candles | Manifestazione Fisica</title>
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #f4d03f;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .header {
+            padding: 50px 20px;
+            background: linear-gradient(to bottom, #1a1a1a, #0d0d0d);
+        }
+        h1 {
+            font-size: 2.5em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-style: italic;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        .container {
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+        }
+        .promo-video {
+            width: 100%;
+            border-radius: 15px;
+            border: 2px solid #f4d03f;
+            margin-bottom: 30px;
+        }
+        .btn-gold {
+            background: linear-gradient(45deg, #ff9900, #ffcc00);
+            color: black;
+            padding: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 20px;
+            transition: 0.3s;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+            width: 80%;
+        }
+        .btn-gold:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.8);
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        .feature-item {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+            color: white;
+        }
+        .feature-item b { color: #f4d03f; }
+    </style>
+</head>
+<body>
+
+<div id="google_translate_element"></div>
+
+<div class="header">
+    <h1>VICTOR MILANO CANDLES</h1>
+    <p class="subtitle">L'Emozione Visiva che illumina l'Anima</p>
+</div>
+
+<div class="container">
+    <a href="catalogo_candele.pdf_20260309_191151_0000-compressed (1).pdf" target="_blank" class="btn-gold">
+        🔥 SFOGLIA IL CATALOGO DELLE FIAMME (PDF) 🔥
+    </a>
+
+    <div class="features">
+        <div class="feature-item">
+            <b>ECO-CHIC</b><br>
+            Cera di alta qualità e packaging ecosostenibile.
+        </div>
+        <div class="feature-item">
+            <b>DESIGN ITALIANO</b><br>
+            Le "Dee" e i "Valentinus" come icone di stile.
+        </div>
+    </div>
+
+    <hr style="border: 0.5px solid #333; margin-top: 50px;">
+    <p style="font-size: 0.8em; color: gray;">© 2026 Victor Milano - Manifestazione Fisica</p>
+</div>
+
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element');
+    }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>
