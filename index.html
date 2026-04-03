@@ -104,27 +104,23 @@
         </div>
 
     <script>
-        // Audio per l'Uovo (Effetto Grinberg)
-        const eggSound = new Audio('https://www.soundjay.com/buttons/sounds/button-37a.mp3'); 
+                // Audio originale Grinberg dal tuo archivio
+        const eggSound = new Audio('grinberg_jump.wav'); 
         
         function startScanner() {
             const egg = document.getElementById('egg');
             const status = document.getElementById('egg-status');
             
             status.innerText = "SCANSIONE IN CORSO...";
-            eggSound.play(); // Suono all'attivazione
+            eggSound.play().catch(e => console.log("Interazione richiesta per audio"));
 
             setTimeout(() => {
                 egg.classList.toggle('open');
-                if(egg.classList.contains('open')) {
-                    status.innerText = "SINCRONIZZAZIONE GRINBERG ATTIVA";
-                } else {
-                    status.innerText = "CLICCA PER SCANSIONE BIOMETRICA";
-                }
+                status.innerText = egg.classList.contains('open') ? "SINCRONIZZAZIONE GRINBERG ATTIVA" : "CLICCA PER SCANSIONE BIOMETRICA";
             }, 1200);
         }
 
-        // --- LOGICA REGISTRAZIONE LOOP (MAPPA SONORA) ---
+        // --- LOGICA MAPPA SONORA (LOOP REALE) ---
         let mediaRecorder;
         let audioChunks = [];
 
@@ -133,29 +129,27 @@
             const status = document.getElementById('status');
 
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                // Inizia registrazione
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    const loopAudio = new Audio(audioUrl);
-                    loopAudio.loop = true; // Attiva il LOOP
-                    loopAudio.play();
-                    status.innerText = "LOOP ATTIVO NELLA MAPPA SONORA";
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
                     audioChunks = [];
-                };
 
-                mediaRecorder.start();
-                btn.innerText = "🛑 FERMA E AVVIA LOOP";
-                status.innerText = "REGISTRAZIONE IN CORSO...";
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const loopAudio = new Audio(URL.createObjectURL(audioBlob));
+                        loopAudio.loop = true; // ATTIVA IL LOOP
+                        loopAudio.play();
+                        status.innerText = "MAPPA SONORA: LOOP ATTIVO";
+                    };
+
+                    mediaRecorder.start();
+                    btn.innerText = "🛑 FERMA E AVVIA LOOP";
+                    status.innerText = "REGISTRAZIONE IN CORSO...";
+                } catch (err) {
+                    status.innerText = "ERRORE MICROFONO!";
+                }
             } else {
-                // Ferma registrazione
                 mediaRecorder.stop();
                 btn.innerText = "🎙️ REGISTRA NUOVO LOOP";
             }
