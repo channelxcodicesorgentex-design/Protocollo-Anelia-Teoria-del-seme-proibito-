@@ -101,65 +101,42 @@
         <a href="Teoria_del_Seme_Proibito_2026.pdf_20260329_003448_0000.pdf" target="_blank">
             <button class="btn-gold">📥 SCARICA TRATTATO (PDF)</button>
         </a>
-<a href="catalogo_candele.pdf_20260309_191151_0000-compressed (1).pdf" target="_blank" class="btn-gold" style="background: linear-gradient(45deg, #ff9900, #ffcc00); margin-top: 20px; display: block; text-decoration: none; padding: 15px; border-radius: 10px; color: black; font-weight: bold; text-align: center;">
-    🔥 APRI IL CATALOGO DELLE FIAMME (PDF) 🔥
-</a>
+        <a href="catalogo_candele.pdf_20260309_191151_0000-compressed (1).pdf" target="_blank" class="btn-gold" style="background: linear-gradient(45deg, #ff9900, #ffcc00); margin-top: 20px; display: block; text-decoration: none; padding: 15px; border-radius: 10px; color: black; font-weight: bold; text-align: center;">
+            🔥 APRI IL CATALOGO DELLE FIAMME (PDF) 🔥
+        </a>
+    </div>
 
-<div id="google_translate_element"></div>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <div id="google_translate_element"></div>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-<script>
-    function googleTranslateElementInit() {
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element');
+        ment({pageLanguage: 'it'}, 'google_translate_element');
+        }
 
-        // --- LOGICA SCANNER CON GRINBERG ---
         function startScanner() {
             const egg = document.getElementById('egg');
             const status = document.getElementById('egg-status');
+            status.innerText = "SCANSIONE IN CORSO...";
+            status.style.color = "#ffcc00";
             
-            // Audio dello scanner (Manteniamo quello Hitech)
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator(); osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.5);
-            const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
-            
-            // Apertura/Chiusura Egg
-            egg.classList.toggle('open');
-            status.innerText = egg.classList.contains('open') ? "PORTALE APERTO - GRINBERG RILEVATO" : "CLICCA PER SCANSIONE BIOMETRICA";
-            
-            // Audio Mario Bros (Se presente il file grinberg_jump.wav)
-            if(egg.classList.contains('open')) {
-                const marioAudio = new Audio('grinberg_jump.wav'); // CARICA QUESTO FILE SU GITHUB!
-                marioAudio.play().catch(e => console.log("Audio Mario non trovato o bloccato."));
-            }
+            setTimeout(() => {
+                egg.classList.toggle('open');
+                status.innerText = egg.classList.contains('open') ? "SINCRONIZZAZIONE GRINBERG ATTIVA" : "CLICCA PER SCANSIONE BIOMETRICA";
+            }, 1200);
         }
 
-        // --- LOGICA REGISTRAZIONE (FUNZIONANTE) ---
-        let mediaRecorder; let audioChunks = []; let audioLoop = new Audio(); audioLoop.loop = true;
-        async function toggleRecording() {
+        let isRecording = false;
+        function toggleRecording() {
             const btn = document.getElementById('recordBtn');
             const status = document.getElementById('status');
-            if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
-                    audioLoop.src = URL.createObjectURL(blob);
-                    audioLoop.play();
-                    status.innerText = "LOOP ATTIVO NELLA LATTICE...";
-                };
-                audioChunks = []; mediaRecorder.start();
-                btn.innerText = "⏹️ FERMA E LANCIA LOOP";
-                status.innerText = "REGISTRAZIONE IN CORSO...";
-            } else {
-                mediaRecorder.stop();
-                btn.innerText = "🎙️ REGISTRA NUOVO COMANDO";
-            }
+            isRecording = !isRecording;
+            btn.innerText = isRecording ? "🛑 FERMA REGISTRAZIONE" : "🎙️ REGISTRA COMANDO (LOOP)";
+            status.innerText = isRecording ? "REGISTRAZIONE ATTIVA..." : "COMANDO SALVATO NELLA SORGENTE X";
+            status.style.color = isRecording ? "#ff4500" : "#00ffcc";
         }
     </script>
 </body>
 </html>
+
