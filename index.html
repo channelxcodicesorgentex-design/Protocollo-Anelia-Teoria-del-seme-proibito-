@@ -72,6 +72,45 @@
         button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; }
         .btn-gold { background: var(--seed-gold) !important; color: black !important; border: none !important; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
     </style>
+        <script>
+        window.onload = function() {
+            // Audio dello Scanner
+            const scannerSound = new Audio('https://www.soundjay.com/buttons/sounds/button-29.mp3'); 
+            scannerSound.play().catch(e => console.log("Audio in attesa..."));
+
+            // Creazione Overlay Glitch
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: black; color: #00ffcc; z-index: 10000;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                font-family: 'Courier New', monospace; text-align: center;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="animation: glitch 0.2s infinite;">
+                    <p style="font-size: 1.5em; margin: 0;">>> ATTIVANDO IL PROTOCOLLO ANELIA</p>
+                    <p style="font-size: 2em; color: #ffcc00; margin: 10px 0;">STATUS 16%</p>
+                    <p style="font-size: 0.8em;">SCANNING SORGENTE X...</p>
+                </div>
+                <style>
+                    @keyframes glitch {
+                        0% { transform: translate(2px, 0) skew(0deg); }
+                        50% { transform: translate(-2px, 0) skew(5deg); opacity: 0.8; }
+                        100% { transform: translate(0, 0) skew(0deg); }
+                    }
+                </style>
+            `;
+
+            document.body.appendChild(overlay);
+
+            // Rimuove l'effetto dopo 2.5 secondi
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 2500);
+        }
+    </script>
+
 </head>
 <body>
     <div id="google_translate_element"></div>
