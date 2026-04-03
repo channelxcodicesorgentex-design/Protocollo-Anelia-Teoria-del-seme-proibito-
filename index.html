@@ -96,47 +96,70 @@
         <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold);">SISTEMA IN ATTESA...</div>
     </div>
 
-    <div class="box" style="border-color: var(--seed-gold);">
+        <div class="box" style="border-color: var(--seed-gold);">
         <h3>DOCUMENTAZIONE SORGENTE</h3>
         <a href="Teoria_del_Seme_Proibito_2026.pdf_20260329_003448_0000.pdf" target="_blank">
             <button class="btn-gold">📥 SCARICA TRATTATO (PDF)</button>
         </a>
-        <a href="catalogo_candele.pdf_20260309_191151_0000-compressed (1).pdf" target="_blank" class="btn-gold" style="background: linear-gradient(45deg, #ff9900, #ffcc00); margin-top: 20px; display: block; text-decoration: none; padding: 15px; border-radius: 10px; color: black; font-weight: bold; text-align: center;">
-            🔥 APRI IL CATALOGO DELLE FIAMME (PDF) 🔥
-        </a>
-    </div>
-
-    <div id="google_translate_element"></div>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        </div>
 
     <script>
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'it'}, 'google_translate_element');
-        ment({pageLanguage: 'it'}, 'google_translate_element');
-        }
-
+        // Audio per l'Uovo (Effetto Grinberg)
+        const eggSound = new Audio('https://www.soundjay.com/buttons/sounds/button-37a.mp3'); 
+        
         function startScanner() {
             const egg = document.getElementById('egg');
             const status = document.getElementById('egg-status');
-            status.innerText = "SCANSIONE IN CORSO...";
-            status.style.color = "#ffcc00";
             
+            status.innerText = "SCANSIONE IN CORSO...";
+            eggSound.play(); // Suono all'attivazione
+
             setTimeout(() => {
                 egg.classList.toggle('open');
-                status.innerText = egg.classList.contains('open') ? "SINCRONIZZAZIONE GRINBERG ATTIVA" : "CLICCA PER SCANSIONE BIOMETRICA";
+                if(egg.classList.contains('open')) {
+                    status.innerText = "SINCRONIZZAZIONE GRINBERG ATTIVA";
+                } else {
+                    status.innerText = "CLICCA PER SCANSIONE BIOMETRICA";
+                }
             }, 1200);
         }
 
-        let isRecording = false;
-        function toggleRecording() {
+        // --- LOGICA REGISTRAZIONE LOOP (MAPPA SONORA) ---
+        let mediaRecorder;
+        let audioChunks = [];
+
+        async function toggleRecording() {
             const btn = document.getElementById('recordBtn');
             const status = document.getElementById('status');
-            isRecording = !isRecording;
-            btn.innerText = isRecording ? "🛑 FERMA REGISTRAZIONE" : "🎙️ REGISTRA COMANDO (LOOP)";
-            status.innerText = isRecording ? "REGISTRAZIONE ATTIVA..." : "COMANDO SALVATO NELLA SORGENTE X";
-            status.style.color = isRecording ? "#ff4500" : "#00ffcc";
+
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+                // Inizia registrazione
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const loopAudio = new Audio(audioUrl);
+                    loopAudio.loop = true; // Attiva il LOOP
+                    loopAudio.play();
+                    status.innerText = "LOOP ATTIVO NELLA MAPPA SONORA";
+                    audioChunks = [];
+                };
+
+                mediaRecorder.start();
+                btn.innerText = "🛑 FERMA E AVVIA LOOP";
+                status.innerText = "REGISTRAZIONE IN CORSO...";
+            } else {
+                // Ferma registrazione
+                mediaRecorder.stop();
+                btn.innerText = "🎙️ REGISTRA NUOVO LOOP";
+            }
         }
     </script>
 </body>
 </html>
-
