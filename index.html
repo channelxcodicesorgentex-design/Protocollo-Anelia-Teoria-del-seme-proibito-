@@ -72,13 +72,21 @@
         button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; }
         .btn-gold { background: var(--seed-gold) !important; color: black !important; border: none !important; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
     </style>
-                        <script>
-        // Il file che hai appena ricaricato
+                                <script>
+        // Caricamento forzato: assicurati che il file si chiami Scanner.mp3 con la S maiuscola
         const scannerSound = new Audio('Scanner.mp3');
 
         function startScannerY1() {
-            scannerSound.load(); 
-            scannerSound.play().catch(e => console.log("Audio in attesa di tocco..."));
+            // Sblocco immediato dell'audio
+            scannerSound.load();
+            let playPromise = scannerSound.play();
+
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Se fallisce il primo colpo, riprova dopo un istante
+                    setTimeout(() => { scannerSound.play(); }, 50);
+                });
+            }
 
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -94,28 +102,24 @@
                     <p style="font-size: 2.2em; color: #ffcc00; margin: 10px 0;">STATUS 16%</p>
                     <p style="font-size: 0.8em;">SORGENTE X: SCANNING...</p>
                 </div>
-                <style>
-                    @keyframes glitch {
-                        0% { transform: translate(2px, 0); }
-                        50% { transform: translate(-2px, 0); opacity: 0.8; }
-                        100% { transform: translate(0, 0); }
-                    }
-                </style>
             `;
             document.body.appendChild(overlay);
             setTimeout(() => { overlay.remove(); }, 2200);
         }
 
-        const triggerProtocol = () => {
+        // Funzione di attivazione globale
+        const activateAnelia = () => {
             if (!window.protocolStarted) {
-                startScannerY1();
                 window.protocolStarted = true;
+                startScannerY1();
             }
         };
 
-        window.addEventListener('touchstart', triggerProtocol, { once: true });
-        window.addEventListener('mousedown', triggerProtocol, { once: true });
+        // Ascolta ogni tipo di interazione per svegliare l'audio
+        window.addEventListener('touchstart', activateAnelia, { once: true });
+        window.addEventListener('click', activateAnelia, { once: true });
     </script>
+
 </head>
 <body>
     <div id="google_translate_element"></div>
