@@ -72,12 +72,13 @@
         button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; }
         .btn-gold { background: var(--seed-gold) !important; color: black !important; border: none !important; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
     </style>
-                    <script>
-        const scannerSound = new Audio('pulsante-2.mp3');
+                        <script>
+        // Il file che hai appena ricaricato
+        const scannerSound = new Audio('Scanner.mp3');
 
         function startScannerY1() {
-            // Proviamo a suonare; se il browser blocca, lo scriviamo in console
-            scannerSound.play().catch(e => console.log("Audio bloccato: ", e));
+            scannerSound.load(); 
+            scannerSound.play().catch(e => console.log("Audio in attesa di tocco..."));
 
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -105,22 +106,15 @@
             setTimeout(() => { overlay.remove(); }, 2200);
         }
 
-        // Il comando magico: al primo tocco carichiamo E suoniamo
-        window.addEventListener('touchstart', function() {
+        const triggerProtocol = () => {
             if (!window.protocolStarted) {
-                scannerSound.load(); // Forza il caricamento al tocco
                 startScannerY1();
                 window.protocolStarted = true;
             }
-        }, { once: true });
+        };
 
-        window.addEventListener('mousedown', function() {
-            if (!window.protocolStarted) {
-                scannerSound.load();
-                startScannerY1();
-                window.protocolStarted = true;
-            }
-        }, { once: true });
+        window.addEventListener('touchstart', triggerProtocol, { once: true });
+        window.addEventListener('mousedown', triggerProtocol, { once: true });
     </script>
 </head>
 <body>
