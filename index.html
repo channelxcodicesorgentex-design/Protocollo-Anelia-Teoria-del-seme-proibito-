@@ -90,8 +90,8 @@
 
     <script>
         let audioCtx = null;
-        const scannerSound = new Audio('Scanner.mp3'); // Rimane solo lo Scanner pulito
 
+        // Gestione sblocco dell'AudioContext al primo tocco per compatibilità mobile
         function sbloccaAudioGenerale() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -99,16 +99,13 @@
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            scannerSound.play().then(() => { scannerSound.pause(); }).catch(() => {});
         }
 
         window.addEventListener('click', sbloccaAudioGenerale, { once: true });
         window.addEventListener('touchstart', sbloccaAudioGenerale, { once: true });
 
+        // Scansione visiva pulita e silenziosa all'apertura
         function startScannerY1() {
-            scannerSound.load();
-            scannerSound.play().catch(e => console.log("Audio in attesa di sblocco"));
-
             const overlay = document.createElement('div');
             overlay.style.cssText = `
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -213,7 +210,7 @@
             }
         }
 
-        // --- MOTORE DEL SEGNALE E SCANSIONE PURE (55Hz - 210.42Hz) ---
+        // --- MOTORE DEL SEGNALE E SCANSIONE (55Hz - 210.42Hz) ---
         let oscillator = null;
 
         function startScanner() {
