@@ -7,52 +7,62 @@
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
         :root { --neon-green: #00ffcc; --seed-gold: #ffcc00; --bg-black: #0a0a0a; --text-gray: #e0e0e0; --pixel-mario: #ff4500; }
-        body { background-color: var(--bg-black); color: var(--text-gray); font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        body { background-color: var(--bg-black); color: var(--text-gray); font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; -webkit-font-smoothing: antialiased; }
         #google_translate_element { margin: 10px 0; }
         header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--neon-green); width: 100%; padding-bottom: 10px; }
         h1 { color: var(--neon-green); font-size: 1.4em; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
         h2 { color: var(--seed-gold); font-size: 0.8em; margin-top: 5px; }
 
         /* L'UOVO-PORTALE */
-        .mfc-container { margin: 20px 0; position: relative; cursor: pointer; perspective: 1000px; }
+        .mfc-container { margin: 20px 0; position: relative; cursor: pointer; perspective: 1000px; display: flex; flex-direction: column; align-items: center; }
         .mfc-egg { 
-            width: 150px; height: 200px; 
-            background: radial-gradient(circle at 30% 30%, #555, #000); 
+            width: 180px; height: 240px; 
+            background: radial-gradient(circle at 30% 30%, #222, #000); 
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; 
             box-shadow: 0 0 20px var(--neon-green); 
             transition: all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55); 
             animation: pulse 3s infinite ease-in-out;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            overflow: hidden; /* Importante per Grinberg */
+            overflow: hidden; position: relative;
         }
         
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 
+        /* CANVAS INTERNO ALL'UOVO PER LA MATRICE GNA */
+        #gnaMatrixCanvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            background: transparent;
+            pointer-events: none;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
+        }
+
         /* GRINBERG PIXEL-ART (NASCOSTO) */
         .grinberg-pixel {
             width: 80px; height: 100px;
-            background-color: var(--pixel-mario); /* Colore base 'Mario' */
-            /* Pixel art stilizzata di Grinberg con i baffi */
+            background-color: var(--pixel-mario); 
             clip-path: polygon(0 20%, 20% 20%, 20% 0, 80% 0, 80% 20%, 100% 20%, 100% 40%, 80% 40%, 80% 60%, 100% 60%, 100% 80%, 80% 80%, 80% 100%, 20% 100%, 20% 80%, 0 80%, 0 60%, 20% 60%, 20% 40%, 0 40%);
             opacity: 0; transition: opacity 0.5s ease 0.8s, transform 0.5s ease 0.8s;
             transform: scale(0);
             box-shadow: inset 0 0 10px black;
+            z-index: 2;
         }
-        /* Dettagli Pixel (Occhi e Baffi) */
         .grinberg-pixel::after {
             content: ''; position: absolute; width: 100%; height: 100%;
             background: 
-                linear-gradient(90deg, #fff 20%, transparent 20%) 25% 25% / 15% 15% no-repeat, /* Occhio Sx */
-                linear-gradient(90deg, #fff 20%, transparent 20%) 60% 25% / 15% 15% no-repeat, /* Occhio Dx */
-                linear-gradient(90deg, #8b4513 100%, transparent 100%) 30% 60% / 40% 15% no-repeat; /* Baffi */
+                linear-gradient(90deg, #fff 20%, transparent 20%) 25% 25% / 15% 15% no-repeat, 
+                linear-gradient(90deg, #fff 20%, transparent 20%) 60% 25% / 15% 15% no-repeat, 
+                linear-gradient(90deg, #8b4513 100%, transparent 100%) 30% 60% / 40% 15% no-repeat; 
         }
 
         /* FUMETTO CITAZIONE (NASCOSTO) */
         .quote-bubble {
-            position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%) scale(0);
+            position: absolute; bottom: -90px; left: 50%; transform: translateX(-50%) scale(0);
             width: 250px; background: white; color: black; padding: 10px; border-radius: 10px;
             font-size: 0.7em; text-align: center; border: 2px solid black;
-            transition: all 0.5s ease 1.2s; opacity: 0;
+            transition: all 0.5s ease 1.2s; opacity: 0; z-index: 5;
         }
         .quote-bubble::after { content: ''; position: absolute; top: -10px; left: 50%; border-width: 10px; border-style: solid; border-color: transparent transparent white transparent; transform: translateX(-50%); }
 
@@ -63,30 +73,43 @@
             box-shadow: 0 0 60px var(--seed-gold); 
             border-radius: 10%; 
         }
-        
-        .mfc-egg.open .grinberg-pixel { opacity: 1; transform: scale(1) rotateY(180deg); } /* Ruota anche Grinberg per vederlo dritto */
+        .mfc-egg.open #gnaMatrixCanvas { opacity: 0.8; }
+        .mfc-egg.open .grinberg-pixel { opacity: 1; transform: scale(1) rotateY(180deg); } 
         .mfc-egg.open + .quote-bubble { opacity: 1; transform: translateX(-50%) scale(1); }
 
-        /* BOX E PULSANTI (INVARIATI) */
-        .box { border: 1px solid var(--neon-green); padding: 20px; width: 90%; max-width: 400px; text-align: center; margin-bottom: 20px; background: rgba(0, 255, 204, 0.05); }
-        button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; }
+        /* BOX E PULSANTI */
+        .box { border: 1px solid var(--neon-green); padding: 20px; width: 90%; max-width: 400px; text-align: center; margin-bottom: 20px; background: rgba(0, 255, 204, 0.05); box-sizing: border-box; }
+        button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 12px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; font-family: 'Courier New', monospace; -webkit-appearance: none; border-radius: 0; }
         .btn-gold { background: var(--seed-gold) !important; color: black !important; border: none !important; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); }
+        
+        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
     </style>
-                                <script>
-        // Caricamento forzato: assicurati che il file si chiami Scanner.mp3 con la S maiuscola
+
+    <script>
+        // Gestione Audio Universale Cross-Platform
+        let audioCtx = null;
         const scannerSound = new Audio('Scanner.mp3');
+        const eggSound = new Audio('grinberg_jump.wav');
+
+        // Sblocco forzato dei canali audio per iOS (Safari richiede interazione esplicita)
+        function sbloccaAudioGenerale() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            // Caricamento preventivo dei file statici
+            scannerSound.play().then(() => { scannerSound.pause(); }).catch(() => {});
+            eggSound.play().then(() => { eggSound.pause(); }).catch(() => {});
+        }
+
+        window.addEventListener('click', sbloccaAudioGenerale, { once: true });
+        window.addEventListener('touchstart', sbloccaAudioGenerale, { once: true });
 
         function startScannerY1() {
-            // Sblocco immediato dell'audio
             scannerSound.load();
-            let playPromise = scannerSound.play();
-
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    // Se fallisce il primo colpo, riprova dopo un istante
-                    setTimeout(() => { scannerSound.play(); }, 50);
-                });
-            }
+            scannerSound.play().catch(e => console.log("Audio in attesa di sblocco"));
 
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -99,15 +122,14 @@
             overlay.innerHTML = `
                 <div style="animation: glitch 0.2s infinite;">
                     <p style="font-size: 1.2em; margin: 0;">>> ATTIVANDO IL PROTOCOLLO ANELIA</p>
-                    <p style="font-size: 2.2em; color: #ffcc00; margin: 10px 0;">STATUS 16%</p>
-                    <p style="font-size: 0.8em;">SORGENTE X: SCANNING...</p>
+                    <p style="font-size: 2.2em; color: #ffcc00; margin: 10px 0;">STATUS 100%</p>
+                    <p style="font-size: 0.8em;">SORGENTE X: SCANNING CORRETTO...</p>
                 </div>
             `;
             document.body.appendChild(overlay);
             setTimeout(() => { overlay.remove(); }, 2200);
         }
 
-        // Funzione di attivazione globale
         const activateAnelia = () => {
             if (!window.protocolStarted) {
                 window.protocolStarted = true;
@@ -115,11 +137,9 @@
             }
         };
 
-        // Ascolta ogni tipo di interazione per svegliare l'audio
         window.addEventListener('touchstart', activateAnelia, { once: true });
         window.addEventListener('click', activateAnelia, { once: true });
     </script>
-
 </head>
 <body>
     <div id="google_translate_element"></div>
@@ -130,78 +150,191 @@
 
     <div class="mfc-container" onclick="startScanner()">
         <div id="egg" class="mfc-egg">
+            <canvas id="gnaMatrixCanvas"></canvas>
             <div class="grinberg-pixel"></div>
         </div>
         <div id="quote" class="quote-bubble">
             "La realtà non è ciò che vediamo, ma ciò che creiamo con la nostra Sintesi Energetica."
         </div>
-        <p id="egg-status" style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green);">CLICCA PER SCANSIONE BIOMETRICA</p>
+        <p id="egg-status" style="text-align:center; font-size: 0.7em; margin-top: 15px; color: var(--neon-green); letter-spacing: 1px;">CLICCA PER SCANSIONE BIOMETRICA GNA</p>
     </div>
 
     <div class="box">
         <h3>RENAISSANCE: MAPPA SONORA</h3>
         <button id="recordBtn" onclick="toggleRecording()">🎙️ REGISTRA COMANDO (LOOP)</button>
-        <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold);">SISTEMA IN ATTESA...</div>
+        <div id="status" style="font-size: 0.6em; margin-top: 10px; color: var(--seed-gold); letter-spacing: 1px;">SISTEMA IN ATTESA...</div>
     </div>
 
-        <div class="box" style="border-color: var(--seed-gold);">
+    <div class="box" style="border-color: var(--seed-gold);">
         <h3>DOCUMENTAZIONE SORGENTE</h3>
-        <a href="Teoria_del_Seme_Proibito_2026.pdf_20260329_003448_0000.pdf" target="_blank">
+        <a href="Teoria_del_Seme_Proibito_2026.pdf_20260329_003448_0000.pdf" target="_blank" style="text-decoration: none;">
             <button class="btn-gold">📥 SCARICA TRATTATO (PDF)</button>
         </a>
-        </div>
+    </div>
 
     <script>
-                // Audio originale Grinberg dal tuo archivio
-        const eggSound = new Audio('grinberg_jump.wav'); 
-        
+        // --- GEOMETRIA MATRICE ESAGONALE GNA ---
+        let gnaCanvas, gnaCtx, scanInterval;
+        const esagonoRaggio = 12;
+        const esagonoH = esagonoRaggio * Math.sqrt(3);
+        const esagonoW = esagonoRaggio * 2;
+
+        function inizializzaGriglia() {
+            gnaCanvas = document.getElementById('gnaMatrixCanvas');
+            gnaCtx = gnaCanvas.getContext('2d');
+            // Adatta le dimensioni del canvas alla forma dell'uovo
+            gnaCanvas.width = 180;
+            gnaCanvas.height = 240;
+            disegnaMatriceEsagonale(0.2, false);
+        }
+
+        function disegnaSingoloEsagono(x, y, raggio, opacita) {
+            gnaCtx.beginPath();
+            gnaCtx.strokeStyle = `rgba(0, 255, 204, ${opacita})`;
+            gnaCtx.lineWidth = 1;
+            for (let i = 0; i < 6; i++) {
+                let angolo = (Math.PI / 3) * i;
+                let eX = x + raggio * Math.cos(angolo);
+                let eY = y + raggio * Math.sin(angolo);
+                if (i === 0) gnaCtx.moveTo(eX, eY);
+                else gnaCtx.lineTo(eX, eY);
+            }
+            gnaCtx.closePath();
+            gnaCtx.stroke();
+        }
+
+        function disegnaMatriceEsagonale(opacitaFissa, oscillazione) {
+            gnaCtx.clearRect(0, 0, gnaCanvas.width, gnaCanvas.height);
+            let xCount = 0;
+            for (let x = 0; x < gnaCanvas.width + esagonoW; x += esagonoRaggio * 1.5) {
+                let yOffset = (xCount % 2 === 0) ? 0 : esagonoH / 2;
+                for (let y = 0; y < gnaCanvas.height + esagonoH; y += esagonoH) {
+                    let opc = oscillazione ? Math.random() * 0.8 + 0.1 : opacitaFissa;
+                    disegnaSingoloEsagono(x, y + yOffset, esagonoRaggio, opc);
+                }
+                xCount++;
+            }
+        }
+
+        // --- MOTORE DEL SEGNALE E SCANSIONE (55Hz - 210.42Hz) ---
+        let oscillator = null;
+
         function startScanner() {
+            sbloccaAudioGenerale();
             const egg = document.getElementById('egg');
             const status = document.getElementById('egg-status');
             
-            status.innerText = "SCANSIONE IN CORSO...";
-            eggSound.play().catch(e => console.log("Interazione richiesta per audio"));
+            if(egg.classList.contains('open')) {
+                // Inversione / Chiusura
+                egg.classList.remove('open');
+                status.innerText = "CLICCA PER SCANSIONE BIOMETRICA GNA";
+                disegnaMatriceEsagonale(0.2, false);
+                if(oscillator) { try { oscillator.stop(); } catch(e){} }
+                return;
+            }
 
+            status.innerText = "SINTONIZZAZIONE MFC E GNA IN CORSO...";
+            eggSound.play().catch(e => console.log("Richiesto sblocco tocco"));
+
+            // Avvia oscillazione visiva del plasma geometrico
+            if (scanInterval) clearInterval(scanInterval);
+            scanInterval = setInterval(() => {
+                disegnaMatriceEsagonale(0, true);
+            }, 80);
+
+            // Generazione ed espansione della progressione di frequenza (Progressione Geometrica MFC)
+            if (audioCtx) {
+                oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                
+                // Partenza fissa a 55 Hz
+                oscillator.frequency.setValueAtTime(55, audioCtx.currentTime);
+                // Rampa lineare di 10 secondi fino alla frequenza lunare di 210.42 Hz
+                oscillator.frequency.linearRampToValueAtTime(210.42, audioCtx.currentTime + 10);
+                
+                gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+            }
+
+            // Stabilizzazione ed apertura al compimento dell'allineamento
             setTimeout(() => {
-                egg.classList.toggle('open');
-                status.innerText = egg.classList.contains('open') ? "SINCRONIZZAZIONE GRINBERG ATTIVA" : "CLICCA PER SCANSIONE BIOMETRICA";
-            }, 1200);
+                clearInterval(scanInterval);
+                egg.classList.add('open');
+                status.innerText = "MATRICE GNA CRISTALLIZZATA [210.42 Hz]";
+                disegnaMatriceEsagonale(0.7, false); // Fissa la griglia luminosa
+            }, 2500); 
         }
 
-        // --- LOGICA MAPPA SONORA (LOOP REALE) ---
+        // --- REGISTRATORE MAPPA SONORA CON COMPATIBILITÀ IPHONE/ANDROID ---
         let mediaRecorder;
         let audioChunks = [];
+        let loopAudio = null;
 
         async function toggleRecording() {
+            sbloccaAudioGenerale(); // Risveglia i canali audio
             const btn = document.getElementById('recordBtn');
             const status = document.getElementById('status');
 
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    // SELEZIONE SELETTIVA DEL CODEC UNIVERSALE
+                    let opzioniCodec = {};
+                    if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                        opzioniCodec = { mimeType: 'audio/mp4' }; // Ottimale per iPhone (iOS)
+                    } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                        opzioniCodec = { mimeType: 'audio/webm' }; // Ottimale per Android/Chrome
+                    }
+
+                    mediaRecorder = new MediaRecorder(stream, opzioniCodec);
                     audioChunks = [];
 
-                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data && e.data.size > 0) {
+                            audioChunks.push(e.data);
+                        }
+                    };
+
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        const loopAudio = new Audio(URL.createObjectURL(audioBlob));
-                        loopAudio.loop = true; // ATTIVA IL LOOP
-                        loopAudio.play();
-                        status.innerText = "MAPPA SONORA: LOOP ATTIVO";
+                        // Creazione del file Blob con tipo generico per aggirare i blocchi dei player iOS
+                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        
+                        if(loopAudio) { loopAudio.pause(); }
+                        
+                        loopAudio = new Audio(audioUrl);
+                        loopAudio.loop = true;
+                        
+                        // Attivazione nativa compatibile con le restrizioni mobili
+                        let playPromise = loopAudio.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                status.innerText = "MAPPA SONORA: LOOP ACK ATTIVO";
+                            }).catch(err => {
+                                status.innerText = "REGISTRATO. PREMI SULLA PAGINA PER AVVIARE IL LOOP";
+                                window.addEventListener('click', () => { loopAudio.play(); }, { once: true });
+                            });
+                        }
                     };
 
                     mediaRecorder.start();
                     btn.innerText = "🛑 FERMA E AVVIA LOOP";
-                    status.innerText = "REGISTRAZIONE IN CORSO...";
+                    status.innerText = "REGISTRAZIONE IN CORSO NELLA MAPPA...";
                 } catch (err) {
-                    status.innerText = "ERRORE MICROFONO!";
+                    console.error(err);
+                    status.innerText = "ERRORE AUTORIZZAZIONE MICROFONO!";
                 }
             } else {
                 mediaRecorder.stop();
                 btn.innerText = "🎙️ REGISTRA NUOVO LOOP";
             }
         }
+
+        window.addEventListener('DOMContentLoaded', inizializzaGriglia);
     </script>
 </body>
 </html>
