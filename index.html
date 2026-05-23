@@ -91,7 +91,6 @@
     <script>
         let audioCtx = null;
 
-        // Gestione sblocco dell'AudioContext al primo tocco per compatibilità mobile
         function sbloccaAudioGenerale() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -101,10 +100,7 @@
             }
         }
 
-        window.addEventListener('click', sbloccaAudioGenerale, { once: true });
-        window.addEventListener('touchstart', sbloccaAudioGenerale, { once: true });
-
-        // Scansione visiva pulita e silenziosa all'apertura
+        // Scansione visiva silenziosa all'apertura
         function startScannerY1() {
             const overlay = document.createElement('div');
             overlay.style.cssText = `
@@ -261,7 +257,9 @@
         let loopAudio = null;
 
         async function toggleRecording() {
+            // Sblocca immediatamente il motore audio al tocco del pulsante
             sbloccaAudioGenerale(); 
+            
             const btn = document.getElementById('recordBtn');
             const status = document.getElementById('status');
 
