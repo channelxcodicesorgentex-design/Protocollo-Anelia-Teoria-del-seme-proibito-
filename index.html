@@ -6,7 +6,7 @@
     <title>PROTOCOLLO ANELIA - Codice Sorgente X</title>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
-        :root { --neon-green: #00ffcc; --seed-gold: #ffcc00; --bg-black: #0a0a0a; --text-gray: #e0e0e0; --pixel-mario: #ff4500; }
+        :root { --neon-green: #00ffcc; --seed-gold: #ffcc00; --bg-black: #0a0a0a; --text-gray: #e0e0e0; --core-dark: #111111; }
         body { background-color: var(--bg-black); color: var(--text-gray); font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; -webkit-font-smoothing: antialiased; }
         #google_translate_element { margin: 10px 0; }
         header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid var(--neon-green); width: 100%; padding-bottom: 10px; }
@@ -37,27 +37,30 @@
             pointer-events: none;
             opacity: 0.3;
             transition: opacity 0.5s ease;
+            z-index: 1;
         }
 
-        /* GRINBERG PIXEL-ART (NASCOSTO) */
+        /* NUCLEO DI SINTESI ENERGETICA */
         .grinberg-pixel {
-            width: 80px; height: 100px;
-            background-color: var(--pixel-mario); 
-            clip-path: polygon(0 20%, 20% 20%, 20% 0, 80% 0, 80% 20%, 100% 20%, 100% 40%, 80% 40%, 80% 60%, 100% 60%, 100% 80%, 80% 80%, 80% 100%, 20% 100%, 20% 80%, 0 80%, 0 60%, 20% 60%, 20% 40%, 0 40%);
+            width: 70px; height: 90px;
+            background-color: var(--core-dark); 
+            clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
             opacity: 0; transition: opacity 0.5s ease 0.8s, transform 0.5s ease 0.8s;
             transform: scale(0);
-            box-shadow: inset 0 0 10px black;
+            box-shadow: inset 0 0 15px rgba(0, 255, 204, 0.4);
+            border: 1px solid var(--neon-green);
             z-index: 2;
         }
+        
         .grinberg-pixel::after {
             content: ''; position: absolute; width: 100%; height: 100%;
             background: 
-                linear-gradient(90deg, #fff 20%, transparent 20%) 25% 25% / 15% 15% no-repeat, 
-                linear-gradient(90deg, #fff 20%, transparent 20%) 60% 25% / 15% 15% no-repeat, 
-                linear-gradient(90deg, #8b4513 100%, transparent 100%) 30% 60% / 40% 15% no-repeat; 
+                linear-gradient(90deg, var(--neon-green) 20%, transparent 20%) 30% 40% / 10% 10% no-repeat, 
+                linear-gradient(90deg, var(--neon-green) 20%, transparent 20%) 60% 40% / 10% 10% no-repeat, 
+                linear-gradient(90deg, var(--seed-gold) 100%, transparent 100%) 35% 70% / 30% 8% no-repeat; 
         }
 
-        /* FUMETTO CITAZIONE (NASCOSTO) */
+        /* FUMETTO CITAZIONE */
         .quote-bubble {
             position: absolute; bottom: -90px; left: 50%; transform: translateX(-50%) scale(0);
             width: 250px; background: white; color: black; padding: 10px; border-radius: 10px;
@@ -86,12 +89,9 @@
     </style>
 
     <script>
-        // Gestione Audio Universale Cross-Platform
         let audioCtx = null;
-        const scannerSound = new Audio('Scanner.mp3');
-        const eggSound = new Audio('grinberg_jump.wav');
+        const scannerSound = new Audio('Scanner.mp3'); // Rimane solo lo Scanner pulito
 
-        // Sblocco forzato dei canali audio per iOS (Safari richiede interazione esplicita)
         function sbloccaAudioGenerale() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -99,9 +99,7 @@
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            // Caricamento preventivo dei file statici
             scannerSound.play().then(() => { scannerSound.pause(); }).catch(() => {});
-            eggSound.play().then(() => { eggSound.pause(); }).catch(() => {});
         }
 
         window.addEventListener('click', sbloccaAudioGenerale, { once: true });
@@ -182,7 +180,6 @@
         function inizializzaGriglia() {
             gnaCanvas = document.getElementById('gnaMatrixCanvas');
             gnaCtx = gnaCanvas.getContext('2d');
-            // Adatta le dimensioni del canvas alla forma dell'uovo
             gnaCanvas.width = 180;
             gnaCanvas.height = 240;
             disegnaMatriceEsagonale(0.2, false);
@@ -216,7 +213,7 @@
             }
         }
 
-        // --- MOTORE DEL SEGNALE E SCANSIONE (55Hz - 210.42Hz) ---
+        // --- MOTORE DEL SEGNALE E SCANSIONE PURE (55Hz - 210.42Hz) ---
         let oscillator = null;
 
         function startScanner() {
@@ -225,7 +222,6 @@
             const status = document.getElementById('egg-status');
             
             if(egg.classList.contains('open')) {
-                // Inversione / Chiusura
                 egg.classList.remove('open');
                 status.innerText = "CLICCA PER SCANSIONE BIOMETRICA GNA";
                 disegnaMatriceEsagonale(0.2, false);
@@ -234,23 +230,18 @@
             }
 
             status.innerText = "SINTONIZZAZIONE MFC E GNA IN CORSO...";
-            eggSound.play().catch(e => console.log("Richiesto sblocco tocco"));
 
-            // Avvia oscillazione visiva del plasma geometrico
             if (scanInterval) clearInterval(scanInterval);
             scanInterval = setInterval(() => {
                 disegnaMatriceEsagonale(0, true);
             }, 80);
 
-            // Generazione ed espansione della progressione di frequenza (Progressione Geometrica MFC)
             if (audioCtx) {
                 oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
                 oscillator.type = 'sine';
                 
-                // Partenza fissa a 55 Hz
                 oscillator.frequency.setValueAtTime(55, audioCtx.currentTime);
-                // Rampa lineare di 10 secondi fino alla frequenza lunare di 210.42 Hz
                 oscillator.frequency.linearRampToValueAtTime(210.42, audioCtx.currentTime + 10);
                 
                 gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
@@ -259,22 +250,21 @@
                 oscillator.start();
             }
 
-            // Stabilizzazione ed apertura al compimento dell'allineamento
             setTimeout(() => {
                 clearInterval(scanInterval);
                 egg.classList.add('open');
                 status.innerText = "MATRICE GNA CRISTALLIZZATA [210.42 Hz]";
-                disegnaMatriceEsagonale(0.7, false); // Fissa la griglia luminosa
+                disegnaMatriceEsagonale(0.7, false); 
             }, 2500); 
         }
 
-        // --- REGISTRATORE MAPPA SONORA CON COMPATIBILITÀ IPHONE/ANDROID ---
+        // --- REGISTRATORE MAPPA SONORA UNIVERSALE ---
         let mediaRecorder;
         let audioChunks = [];
         let loopAudio = null;
 
         async function toggleRecording() {
-            sbloccaAudioGenerale(); // Risveglia i canali audio
+            sbloccaAudioGenerale(); 
             const btn = document.getElementById('recordBtn');
             const status = document.getElementById('status');
 
@@ -282,12 +272,11 @@
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     
-                    // SELEZIONE SELETTIVA DEL CODEC UNIVERSALE
                     let opzioniCodec = {};
                     if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                        opzioniCodec = { mimeType: 'audio/mp4' }; // Ottimale per iPhone (iOS)
+                        opzioniCodec = { mimeType: 'audio/mp4' }; 
                     } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-                        opzioniCodec = { mimeType: 'audio/webm' }; // Ottimale per Android/Chrome
+                        opzioniCodec = { mimeType: 'audio/webm' }; 
                     }
 
                     mediaRecorder = new MediaRecorder(stream, opzioniCodec);
@@ -300,7 +289,6 @@
                     };
 
                     mediaRecorder.onstop = () => {
-                        // Creazione del file Blob con tipo generico per aggirare i blocchi dei player iOS
                         const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
                         
@@ -309,7 +297,6 @@
                         loopAudio = new Audio(audioUrl);
                         loopAudio.loop = true;
                         
-                        // Attivazione nativa compatibile con le restrizioni mobili
                         let playPromise = loopAudio.play();
                         if (playPromise !== undefined) {
                             playPromise.then(() => {
